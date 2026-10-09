@@ -75,10 +75,13 @@ go install github.com/0xataru/jobster/cmd/jobster@latest
    ```sh
    curl -s "https://api.telegram.org/bot<TOKEN>/getUpdates" | grep -o '"chat":{"id":[0-9-]*'
    ```
-4. Try it locally:
+4. Try it locally. Put the values in a `.env` file in the working directory
+   (gitignored; real environment variables take precedence):
    ```sh
-   export TELEGRAM_BOT_TOKEN=123456:ABC...
-   export TELEGRAM_CHAT_ID=987654321
+   cat > .env <<'EOF'
+   TELEGRAM_BOT_TOKEN=123456:ABC...
+   TELEGRAM_CHAT_ID=987654321
+   EOF
    go run ./cmd/jobster -notify telegram
    ```
 

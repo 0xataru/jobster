@@ -39,6 +39,11 @@ func main() {
 	}
 	slog.SetDefault(slog.New(slog.NewTextHandler(os.Stderr, &slog.HandlerOptions{Level: level})))
 
+	if err := loadDotEnv(".env"); err != nil {
+		slog.Error("read .env", "err", err)
+		os.Exit(1)
+	}
+
 	ctx, stop := signal.NotifyContext(context.Background(), os.Interrupt)
 	defer stop()
 

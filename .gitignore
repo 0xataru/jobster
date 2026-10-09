@@ -1,3 +1,4 @@
 /jobster
 *.db
 *.db-journal
+.env
