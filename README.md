@@ -270,3 +270,37 @@ internal/job      the Job type and dedupe key
 To add a source, implement `fetch.Fetcher` (`Name`, `Fetch`) with a
 `Parse…(io.Reader)` function, add a fixture and a test, then register it in
 `buildFetchers` in `cmd/jobster/main.go`.
+
+## Contributing
+
+`main` is protected by repository rulesets, which apply to everyone,
+including the owner:
+
+- **Pull requests only.** Direct pushes, force-pushes and deleting `main` are
+  rejected.
+- **CI must pass.** `.github/workflows/ci.yml` (gofmt, `go vet`,
+  `go test -race`) must succeed on a branch that is up to date with `main`.
+- **Owner approval.** Every pull request needs an approval from
+  [@0xataru](https://github.com/0xataru), the code owner of all files
+  (`.github/CODEOWNERS`). New commits dismiss earlier approvals, and review
+  threads must be resolved before merging.
+- **Linear history.** Pull requests are squash- or rebase-merged; merge
+  commits are disabled. A squash merge uses the pull request title as the
+  commit message.
+- **Outside contributors.** CI on pull requests from forks runs only after
+  the owner approves it.
+
+Commit messages and pull request titles are one-line
+[Conventional Commits](https://www.conventionalcommits.org/), with no body:
+`feat: add djinni source`, `fix: expand country codes in locations`.
+
+```sh
+git switch -c fix/something
+# commit, then:
+git push -u origin fix/something
+gh pr create --fill
+```
+
+The owner can't approve their own pull requests on GitHub, so their pull
+requests are merged with a bypass that works only for pull requests (CI is
+still required): `gh pr merge --squash --admin`.
