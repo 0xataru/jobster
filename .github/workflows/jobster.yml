@@ -1,0 +1,57 @@
+name: jobster
+
+on:
+  schedule:
+    - cron: "17 */6 * * *" # every 6 hours (UTC); off the hour to avoid queue spikes
+  workflow_dispatch: {}     # "Run workflow" button for manual runs
+
+# Never run two digests at once: both would restore the same database and
+# could report the same jobs twice.
+concurrency:
+  group: jobster
+  cancel-in-progress: false
+
+permissions:
+  contents: read
+
+jobs:
+  digest:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-go@v5
+        with:
+          go-version-file: go.mod
+
+      - name: Build
+        run: go build -o jobster ./cmd/jobster
+
+      # The SQLite history lives in the Actions cache between runs. Caches are
+      # immutable, so every run saves under a new key and the next run
+      # restores the most recent one via the prefix.
+      - name: Restore job history
+        uses: actions/cache/restore@v4
+        with:
+          path: jobster.db
+          key: jobster-db-${{ github.run_id }}-${{ github.run_attempt }}
+          restore-keys: jobster-db-
+
+      - name: Run
+        env:
+          TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+          TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
+        run: |
+          config=jobster.yaml
+          [ -f "$config" ] || config=config.example.yaml
+          ./jobster -config "$config" -notify telegram
+
+      # Saved even when the run failed: jobs whose notification failed stay
+      # pending in the database and are retried next run.
+      - name: Save job history
+        if: always() && hashFiles('jobster.db') != ''
+        uses: actions/cache/save@v4
+        with:
+          path: jobster.db
+          key: jobster-db-${{ github.run_id }}-${{ github.run_attempt }}

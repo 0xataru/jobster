@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<rss version="2.0" xmlns:media="http://search.yahoo.com/mrss">
+  <channel>
+    <title>We Work Remotely: Back-End Programming Jobs</title>
+    <item>
+      <media:content url="https://example.com/logo.gif" type="image/png"/>
+      <title>Ferrous Cloud: Senior Rust Developer</title>
+      <region>Anywhere in the World</region>
+      <country>🇪🇸 Spain, 🇩🇪 Germany</country>
+      <state></state>
+      <skills>Rust, PostgreSQL, and Kubernetes</skills>
+      <category>Back-End Programming</category>
+      <type>Full-Time</type>
+      <description>&lt;p&gt;&lt;strong&gt;Headquarters:&lt;/strong&gt; Berlin&lt;/p&gt;&lt;p&gt;Rust backend.&lt;/p&gt;</description>
+      <pubDate>Thu, 08 Oct 2026 10:51:23 +0000</pubDate>
+      <expires_at>Sat, 07 Nov 2026 10:51:23 +0000</expires_at>
+      <guid>https://weworkremotely.com/remote-jobs/ferrous-cloud-senior-rust-developer</guid>
+      <link>https://weworkremotely.com/remote-jobs/ferrous-cloud-senior-rust-developer</link>
+    </item>
+    <item>
+      <title>Untitled Posting Without Company</title>
+      <region>USA Only</region>
+      <skills>Go</skills>
+      <description>&lt;p&gt;Go.&lt;/p&gt;</description>
+      <pubDate>Wed, 07 Oct 2026 10:00:00 +0000</pubDate>
+      <guid>https://weworkremotely.com/remote-jobs/x</guid>
+      <link>https://weworkremotely.com/remote-jobs/x</link>
+    </item>
+  </channel>
+</rss>

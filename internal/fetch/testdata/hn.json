@@ -1,0 +1,12 @@
+{"id": 49922569, "author": "whoishiring", "created_at": "2026-10-01T15:00:00.000Z", "title": "Ask HN: Who is hiring? (October 2026)", "type": "story",
+ "text": "Please state the location and include REMOTE...",
+ "children": [
+  {"id": 1001, "author": "a", "created_at": "2026-10-01T15:02:37.000Z", "type": "comment",
+   "text": "Ferrous Labs | Senior Rust Engineer | REMOTE (EU) | Full-time | €90k–120k<p>We build a distributed database in Rust.<p>Apply: <a href=\"https:&#x2F;&#x2F;example.com&#x2F;jobs\">https:&#x2F;&#x2F;example.com&#x2F;jobs</a>",
+   "children": [{"id": 1002, "author": "b", "created_at": "2026-10-01T16:00:00.000Z", "type": "comment", "text": "Is this open to Canada?", "children": []}]},
+  {"id": 1003, "author": "c", "created_at": "2026-10-02T10:00:00.000Z", "type": "comment",
+   "text": "Gopher Co <a href=\"https:&#x2F;&#x2F;gopher.example\">https:&#x2F;&#x2F;gopher.example</a> — Backend Engineer (Go) — ONSITE Berlin<p>Go and Postgres.", "children": []},
+  {"id": 1004, "author": "d", "created_at": "2026-10-02T11:00:00.000Z", "type": "comment",
+   "text": "Not a job post, just saying hi to everyone.", "children": []},
+  {"id": 1005, "author": "e", "created_at": "2026-10-02T12:00:00.000Z", "type": "comment", "text": null, "children": []}
+ ]}

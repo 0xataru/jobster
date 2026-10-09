@@ -1,0 +1,62 @@
+{
+  "jobs": [
+    {
+      "absolute_url": "https://boards.greenhouse.io/examplecloud/jobs/101?gh_jid=101",
+      "id": 101,
+      "internal_job_id": 9101,
+      "title": "Senior Software Engineer, Go",
+      "company_name": "Example Cloud, Inc.",
+      "updated_at": "2026-10-06T10:00:00-04:00",
+      "first_published": "2026-10-05T10:00:00-04:00",
+      "location": { "name": "Remote - Europe" },
+      "content": "&lt;div&gt;&lt;h3&gt;About the role&lt;/h3&gt;&lt;p&gt;Build distributed systems in Go &amp;amp; Kubernetes.&lt;/p&gt;&lt;/div&gt;",
+      "metadata": [],
+      "departments": [{ "id": 1, "name": "Engineering" }],
+      "offices": []
+    },
+    {
+      "absolute_url": "https://boards.greenhouse.io/examplecloud/jobs/102?gh_jid=102",
+      "id": 102,
+      "internal_job_id": 9102,
+      "title": "Systems Engineer, Rust",
+      "company_name": "Example Cloud, Inc.",
+      "updated_at": "2026-10-07T10:00:00-04:00",
+      "first_published": "2026-10-07T10:00:00-04:00",
+      "location": { "name": "Hybrid" },
+      "content": "&lt;p&gt;Rust in the data plane.&lt;/p&gt;",
+      "metadata": [],
+      "departments": [],
+      "offices": [
+        { "id": 7, "name": "London", "location": "London, United Kingdom" }
+      ]
+    },
+    {
+      "absolute_url": "https://boards.greenhouse.io/examplecloud/jobs/103?gh_jid=103",
+      "id": 103,
+      "internal_job_id": 9103,
+      "title": "Senior Backend Engineer",
+      "company_name": "Example Cloud, Inc.",
+      "updated_at": "2026-10-08T10:00:00-04:00",
+      "location": { "name": "Remote" },
+      "content": "&lt;p&gt;Golang services talking gRPC to Postgres.&lt;/p&gt;",
+      "metadata": [],
+      "departments": [],
+      "offices": [{ "id": 8, "name": "Madrid", "location": "Madrid, Spain" }]
+    },
+    {
+      "absolute_url": "https://boards.greenhouse.io/examplecloud/jobs/104?gh_jid=104",
+      "id": 104,
+      "internal_job_id": 9104,
+      "title": "Account Executive",
+      "company_name": "Example Cloud, Inc.",
+      "updated_at": "2026-10-08T10:00:00-04:00",
+      "first_published": "2026-10-08T10:00:00-04:00",
+      "location": { "name": "Remote - Europe" },
+      "content": "&lt;p&gt;Sell our Go-powered platform.&lt;/p&gt;",
+      "metadata": [],
+      "departments": [],
+      "offices": []
+    }
+  ],
+  "meta": { "total": 4 }
+}

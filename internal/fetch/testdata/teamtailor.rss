@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<rss version="2.0" xmlns:tt="https://teamtailor.com/locations">
+  <channel>
+    <title>Example Nordic</title>
+    <description>Current job openings</description>
+    <link>https://examplenordic.teamtailor.com/jobs</link>
+    <item>
+      <title>Senior Rust Developer</title>
+      <description>&lt;p&gt;Work on our &lt;strong&gt;Rust&lt;/strong&gt; &amp;amp; Go backend.&lt;/p&gt;</description>
+      <pubDate>Mon, 05 Oct 2026 09:05:16 +0200</pubDate>
+      <link>https://examplenordic.teamtailor.com/jobs/101-senior-rust-developer</link>
+      <remoteStatus>fully</remoteStatus>
+      <guid>tt-101</guid>
+      <tt:locations>
+        <tt:location>
+          <tt:name>Stockholm HQ</tt:name>
+          <tt:city>Stockholm</tt:city>
+          <tt:country>Sweden</tt:country>
+        </tt:location>
+      </tt:locations>
+      <tt:department>Engineering</tt:department>
+    </item>
+    <item>
+      <title>Account Executive</title>
+      <description>&lt;p&gt;Sell.&lt;/p&gt;</description>
+      <pubDate>Mon, 05 Oct 2026 09:05:16 +0200</pubDate>
+      <link>https://examplenordic.teamtailor.com/jobs/102-account-executive</link>
+      <remoteStatus>none</remoteStatus>
+      <guid>tt-102</guid>
+      <tt:locations/>
+    </item>
+  </channel>
+</rss>

@@ -1,0 +1,157 @@
+# jobster configuration. Durations accept Go syntax ("30s", "12h") or days ("7d").
+#
+# Match terms (titles, keywords, regions, scoring) are case-insensitive and
+# match whole words: "go" does not match "google". A space matches spaces or
+# hyphens, a hyphen is optional ("on-site" also matches "onsite" and "on site").
+# Prefix a term with "=" to match case-sensitively: "=Go" matches the language
+# but not "go the extra mile".
+
+db_path: jobster.db
+workers: 4
+http_timeout: 30s
+dedupe_window: 90d   # a job not seen for this long can be notified again
+digest_limit: 20
+
+filter:
+  max_age: 7d
+  # Per source kind. ATS boards date a job by when it was first published, so
+  # roles open for weeks would never show up with 7d. Dedupe still reports
+  # each job once, and digest_limit spreads a large first-run backlog over runs.
+  max_age_by_source:
+    greenhouse: 60d
+    lever: 60d
+    ashby: 60d
+    teamtailor: 60d
+    hn: 35d          # the monthly thread stays relevant all month
+  titles:
+    include: [engineer, developer, sre, programmer, architect]
+    exclude: [junior, intern, internship, graduate, trainee, manager, director, "sales", "account executive"]
+  keywords:
+    required: ["=Go", golang, rust]
+    exclude:
+      - US only
+      - USA only
+      - U.S. only
+      - US citizens
+      - US residents only
+      - must be located in the US
+      - security clearance
+  regions:
+    allow:
+      - europe
+      - european
+      - emea
+      - eu
+      - cet
+      - cest
+      - worldwide
+      - anywhere
+      - global
+      - spain
+      - españa
+      - portugal
+      - france
+      - germany
+      - netherlands
+      - the netherlands
+      - belgium
+      - luxembourg
+      - ireland
+      - united kingdom
+      - uk
+      - poland
+      - italy
+      - switzerland
+      - austria
+      - sweden
+      - norway
+      - denmark
+      - finland
+      - iceland
+      - estonia
+      - latvia
+      - lithuania
+      - czech republic
+      - czechia
+      - slovakia
+      - slovenia
+      - croatia
+      - hungary
+      - romania
+      - bulgaria
+      - greece
+    deny: [on-site, hybrid, in office, us only, usa only, americas only, north america only]
+    allow_unspecified: true   # many RemoteOK posts have no location
+
+scoring:
+  threshold: 6
+  title:
+    "=Go": 5
+    golang: 5
+    rust: 5
+    senior: 2
+    staff: 2
+    principal: 2
+    backend: 1
+    platform: 1
+    # Another primary language in the title: Go/Rust in the description is
+    # then usually incidental ("we also have some Rust").
+    php: -5
+    ruby: -4
+    java: -4
+    .net: -4
+    c#: -4
+  text:
+    golang: 2
+    rust: 2
+    distributed: 1
+    distributed systems: 1
+    microservices: 1
+    kubernetes: 1
+    aws: 1
+    grpc: 1
+    postgres: 1
+    php: -2
+    laravel: -2
+    wordpress: -3
+  min_salary: 80000
+  salary_above: 2
+  salary_below: -3
+  target_company: 3
+
+# Target companies get the target_company bonus wherever their jobs come from.
+# With ats + slug set, their career board is also fetched directly.
+companies:
+  - { name: Cloudflare,     ats: greenhouse, slug: cloudflare }
+  - { name: GitLab,         ats: greenhouse, slug: gitlab }
+  - { name: Grafana Labs,   ats: greenhouse, slug: grafanalabs }
+  - { name: Datadog,        ats: greenhouse, slug: datadog }
+  - { name: Elastic,        ats: greenhouse, slug: elastic }
+  - { name: Cockroach Labs, ats: greenhouse, slug: cockroachlabs }
+  - { name: Tailscale,      ats: greenhouse, slug: tailscale }
+  - { name: PlanetScale,    ats: greenhouse, slug: planetscale }
+  - { name: Canonical,      ats: greenhouse, slug: canonical }
+  - { name: PingCAP,        ats: greenhouse, slug: pingcap }
+  - { name: Mozilla,        ats: greenhouse, slug: mozilla }
+  - { name: Supabase,       ats: ashby,      slug: supabase }
+  - { name: PostHog,        ats: ashby,      slug: posthog }
+  - { name: Redpanda,       ats: ashby,      slug: redpanda-data }
+  - { name: Materialize,    ats: ashby,      slug: materialize }
+  - { name: Temporal,       ats: ashby,      slug: temporal }
+  - { name: Railway,        ats: ashby,      slug: railway }
+  - { name: Resend,         ats: ashby,      slug: resend }
+  - { name: Zed,            ats: ashby,      slug: zed }
+  - { name: Keyrock,        ats: ashby,      slug: Keyrock }
+  # Lever:      - { name: Example, ats: lever, slug: example }  (jobs.lever.co/<slug>)
+  # Teamtailor: - { name: Example, ats: teamtailor, slug: example }  (<slug>.teamtailor.com;
+  #             companies on a custom domain, like Xata, don't expose the feed)
+  # Target-only (bonus, not fetched):
+  - { name: Xata }
+
+sources:
+  remoteok: { enabled: true }
+  hackernews: { enabled: true }   # latest "Ask HN: Who is hiring?" thread
+
+telegram:
+  token_env: TELEGRAM_BOT_TOKEN
+  chat_id_env: TELEGRAM_CHAT_ID

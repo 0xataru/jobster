@@ -1,0 +1,23 @@
+{
+  "apiVersion": "1",
+  "jobs": [
+    {"id": "a1", "title": "Senior Backend Engineer (Rust)", "department": "Engineering", "team": "Storage",
+     "employmentType": "FullTime", "location": "Remote - Europe",
+     "secondaryLocations": [{"location": "Barcelona", "address": {"postalAddress": {"addressRegion": "Catalonia", "addressCountry": "Spain", "addressLocality": "Barcelona"}}}],
+     "publishedAt": "2026-10-02T09:00:00.000+00:00", "isListed": true, "isRemote": true, "workplaceType": "Remote",
+     "address": {"postalAddress": {"addressCountry": "Germany", "addressLocality": "Berlin"}},
+     "jobUrl": "https://jobs.ashbyhq.com/examplerust/a1", "applyUrl": "https://jobs.ashbyhq.com/examplerust/a1/application",
+     "descriptionHtml": "<p>Rust storage engine.</p>", "descriptionPlain": "Rust storage engine on Kubernetes.",
+     "compensation": {"summaryComponents": [
+       {"compensationType": "EquityPercentage", "interval": "NONE", "currencyCode": null, "minValue": 0.1, "maxValue": 0.2},
+       {"compensationType": "Salary", "interval": "1 YEAR", "currencyCode": "EUR", "minValue": 95000, "maxValue": 125000}
+     ]}},
+    {"id": "a2", "title": "Office Manager", "location": "New York", "secondaryLocations": [],
+     "publishedAt": "2026-10-03T09:00:00.000+00:00", "isListed": true, "isRemote": false, "workplaceType": "OnSite",
+     "address": {"postalAddress": {"addressCountry": "USA"}},
+     "jobUrl": "https://jobs.ashbyhq.com/examplerust/a2", "descriptionPlain": "Keep the office running.", "compensation": null},
+    {"id": "a3", "title": "Unlisted Role", "location": "Remote", "secondaryLocations": [],
+     "publishedAt": "2026-10-03T09:00:00.000+00:00", "isListed": false, "workplaceType": "Remote",
+     "jobUrl": "https://jobs.ashbyhq.com/examplerust/a3", "descriptionPlain": "Hidden."}
+  ]
+}

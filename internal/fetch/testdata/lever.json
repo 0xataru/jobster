@@ -1,0 +1,14 @@
+[
+  {"id": "l1", "text": "Staff Go Engineer, Platform", "createdAt": 1791201600000,
+   "hostedUrl": "https://jobs.lever.co/examplego/l1", "applyUrl": "https://jobs.lever.co/examplego/l1/apply",
+   "country": "PT", "workplaceType": "remote",
+   "categories": {"commitment": "Full-time", "location": "Lisbon", "team": "Platform", "allLocations": ["Lisbon", "Remote - EU"]},
+   "descriptionPlain": "Build Go microservices.", "additionalPlain": "Equal opportunity employer.",
+   "lists": [{"text": "What you'll do", "content": "<li>Run Kubernetes</li><li>Use gRPC</li>"}],
+   "salaryRange": {"min": 100000, "max": 140000, "currency": "EUR", "interval": "per-year-salary"}},
+  {"id": "l2", "text": "Hourly Contractor", "createdAt": 1791201600000,
+   "hostedUrl": "https://jobs.lever.co/examplego/l2", "country": "US", "workplaceType": "hybrid",
+   "categories": {"location": "Austin, TX", "allLocations": ["Austin, TX"]},
+   "descriptionPlain": "Contract.", "lists": [],
+   "salaryRange": {"min": 50, "max": 70, "currency": "USD", "interval": "per-hour-wage"}}
+]

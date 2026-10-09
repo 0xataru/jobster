@@ -1,0 +1,11 @@
+{"comments": "Cursor pagination is now available.", "updatedAt": 1791543848, "offset": 0, "limit": 20, "totalCount": 2,
+ "jobs": [
+  {"title": "Senior Golang Engineer", "excerpt": "Go platform", "companyName": "Orbit Labs", "companySlug": "orbit-labs",
+   "employmentType": "Full Time", "minSalary": 100000, "maxSalary": 140000, "salaryPeriod": "annual", "seniority": ["Senior"],
+   "currency": "EUR", "locationRestrictions": ["Germany", "Spain"], "timezoneRestrictions": [1, 2], "categories": ["Golang-Developer", "Backend-Engineer"],
+   "parentCategories": ["Developer"], "description": "<p>Distributed <b>Go</b> services.</p>", "pubDate": 1791460800, "expiryDate": 1796727847,
+   "applicationLink": "https://himalayas.app/companies/orbit-labs/jobs/senior-golang-engineer", "guid": "https://himalayas.app/companies/orbit-labs/jobs/senior-golang-engineer"},
+  {"title": "Rust Developer", "companyName": "Anywhere Inc", "minSalary": null, "maxSalary": null, "salaryPeriod": "annual",
+   "seniority": [], "currency": null, "locationRestrictions": [], "categories": [], "description": "<p>Rust.</p>", "pubDate": 1791374400,
+   "applicationLink": "https://himalayas.app/companies/anywhere/jobs/rust-developer", "guid": "https://himalayas.app/companies/anywhere/jobs/rust-developer"}
+ ]}

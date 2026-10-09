@@ -1,0 +1,14 @@
+{"00-warning": "Remotive main domain moved to remotive.com !", "0-legal-notice": "Please link back to the URL found on Remotive.",
+ "job-count": 3, "total-job-count": 3,
+ "jobs": [
+  {"id": 2091001, "url": "https://remotive.com/remote-jobs/software-dev/senior-go-engineer-2091001", "title": "Senior Go Engineer",
+   "company_name": "Gopher GmbH", "company_logo": "", "category": "Software Development", "tags": ["golang", "kubernetes"],
+   "job_type": "full_time", "publication_date": "2026-10-07T01:11:09", "candidate_required_location": "Europe",
+   "salary": "€80,000–100,000", "description": "<p>Go &amp; Kubernetes.</p>"},
+  {"id": 2091002, "url": "https://remotive.com/remote-jobs/software-dev/rust-contractor-2091002", "title": "Rust Contractor",
+   "company_name": "Hourly Co", "tags": [], "publication_date": "2026-10-06T08:00:00", "candidate_required_location": "Worldwide",
+   "salary": "$90 - $150 /hour", "description": "<p>Rust.</p>"},
+  {"id": 2091003, "url": "https://remotive.com/remote-jobs/software-dev/backend-2091003", "title": "Backend Engineer",
+   "company_name": "Range Co", "tags": null, "publication_date": "2026-10-05T08:00:00", "candidate_required_location": "USA",
+   "salary": "$90-105k", "description": ""}
+ ]}
