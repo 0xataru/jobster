@@ -7,6 +7,7 @@ import (
 	"html"
 	"io"
 	"net/http"
+	neturl "net/url"
 	"regexp"
 	"strings"
 	"time"
@@ -84,12 +85,15 @@ func (c *Client) tryGet(ctx context.Context, url string) (body io.ReadCloser, re
 		retry = resp.StatusCode == http.StatusTooManyRequests || resp.StatusCode >= 500
 		return nil, retry, fmt.Errorf("GET %s: %s", url, resp.Status)
 	}
-	return limitedBody{io.LimitReader(resp.Body, maxBodyBytes), resp.Body}, false, nil
+	return limitedBody{io.LimitReader(resp.Body, maxBodyBytes), resp.Body, resp.Request.URL}, false, nil
 }
 
+// limitedBody is a size-limited response body that remembers the final URL
+// after redirects.
 type limitedBody struct {
 	io.Reader
 	io.Closer
+	url *neturl.URL
 }
 
 var (
@@ -97,6 +101,9 @@ var (
 	anyTag   = regexp.MustCompile(`<[^>]*>`)
 	blanks   = regexp.MustCompile(`[ \t\r\f\v\x{a0}]+`)
 	newlines = regexp.MustCompile(`\s*\n\s*`)
+	// Tags become spaces, which strands punctuation after inline markup:
+	// "<b>Go</b>." would read "Go .".
+	spaceBeforePunct = regexp.MustCompile(` +([.,;:!?)])`)
 )
 
 // htmlToText reduces an HTML fragment to readable plain text. It is meant for
@@ -107,6 +114,7 @@ func htmlToText(s string) string {
 	s = html.UnescapeString(s)
 	s = blanks.ReplaceAllString(s, " ")
 	s = newlines.ReplaceAllString(s, "\n")
+	s = spaceBeforePunct.ReplaceAllString(s, "$1")
 	return strings.TrimSpace(s)
 }
 

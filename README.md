@@ -26,9 +26,14 @@ fetch (concurrent) → filter → score → dedupe (SQLite) → Telegram digest
 | Ashby boards | `api.ashbyhq.com/posting-api/job-board/{slug}` | `companies[].ats: ashby` |
 | Lever boards | `api.lever.co/v0/postings/{slug}` | `companies[].ats: lever` |
 | Teamtailor sites | `{slug}.teamtailor.com/jobs.rss` | `companies[].ats: teamtailor` |
+| Workable boards | `apply.workable.com/api/v1/widget/accounts/{slug}` | `companies[].ats: workable` |
+| Recruitee sites | `{slug}.recruitee.com/api/offers/` | `companies[].ats: recruitee` |
+| Personio feeds | `{slug}.jobs.personio.de/xml` | `companies[].ats: personio` |
+| Any careers page | detected board, or the page itself | `companies[].careers` |
 
-Only public JSON/RSS endpoints are used, never HTML scraping. Some sites can't
-be supported:
+Aggregators are read through public JSON/RSS endpoints only. HTML is read only
+for the careers pages of companies you list yourself (see
+[Favorite companies](#favorite-companies)). Some sites can't be supported:
 
 - **golang.cafe, rustjobs.dev**: behind a bot checkpoint.
 - **hiddenjobs.dev**: the API is paid-only.
@@ -60,6 +65,7 @@ go install github.com/0xataru/jobster/cmd/jobster@latest
 | `-dry-run` | off | print all current matches; never touches the database or Telegram |
 | `-notify` | `auto` | `auto`: Telegram if both env vars are set, else stdout. `telegram`: fail if they're missing. `stdout`: print only |
 | `-v` | off | debug log of every dropped job and its reason |
+| `-discover` | off | show how each company's careers page will be read, then exit |
 
 ## Telegram setup
 
@@ -153,18 +159,48 @@ A job is dropped if it fails any of these:
 Each term counts once. The digest shows the score; run `-dry-run` to see each
 job's breakdown (e.g. `+5 title:rust, +1 kubernetes, -2 php`).
 
-### Companies (`companies`)
+### Favorite companies
+
+List the companies you'd like to work for under `companies`. Their jobs get
+the `target_company` bonus wherever they appear, and their own open roles are
+fetched and filtered like everything else. Three ways to list a company:
 
 ```yaml
 companies:
-  - { name: Supabase, ats: ashby, slug: supabase }  # fetched and bonused
-  - { name: Xata }                                   # bonus only
+  - { name: Supabase, ats: ashby, slug: supabase }    # known board, read via its API
+  - { name: Xata, careers: "https://xata.io/careers" } # anything else: start from the careers page
+  - { name: Elastic }                                  # bonus only, nothing fetched
 ```
 
-The slug is the board name in the company's careers URL: `jobs.ashbyhq.com/<slug>`,
-`boards.greenhouse.io/<slug>`, `jobs.lever.co/<slug>`, `<slug>.teamtailor.com`.
-A wrong slug shows up as a `source failed … 404` warning. Teamtailor sites on a
-custom domain don't expose the feed and fail with a "not an RSS feed" error.
+**With `ats` + `slug`**, the board's public API is read directly. The slug is
+the board name in its URL: `boards.greenhouse.io/<slug>`,
+`jobs.ashbyhq.com/<slug>`, `jobs.lever.co/<slug>`, `<slug>.teamtailor.com`,
+`apply.workable.com/<slug>`, `<slug>.recruitee.com`, `<slug>.jobs.personio.de`.
+A wrong slug shows up as a `source failed … 404` warning.
+
+**With `careers`**, jobster loads the page and:
+
+1. If it links to one of those job boards, or is a Recruitee site on the
+   company's own domain, it uses that board's API.
+2. Otherwise, or if that API fails, it reads the page itself: schema.org
+   `JobPosting` data when the page has it, else the links to individual job
+   pages (up to 40, below the careers path or under `/jobs/`, `/positions/`,
+   …), taking each page's title and text. If it picks the wrong links, set
+   `link_pattern`, a regexp matched against the link's URL path:
+   `link_pattern: "^/careers/\\d+$"`.
+
+Jobs read from a page have no location or date unless the page publishes
+`JobPosting` data, so they pass the region filter as unspecified. Pages that
+build their job list with JavaScript have no links to read; they fail with a
+"no job links" warning, and you can set `ats`/`slug` instead.
+
+Run `jobster -discover` to see what each careers page resolves to:
+
+```
+Xata                     page with 3 job links
+Supabase                 ashby:supabase board detected; to skip detection: { ats: ashby, slug: supabase }
+Channable                recruitee:jobs.channable.com board detected; keep the careers URL to reach it
+```
 
 ## Deduplication
 

@@ -3,7 +3,9 @@ package config
 
 import (
 	"fmt"
+	"net/url"
 	"os"
+	"regexp"
 	"strconv"
 	"strings"
 	"time"
@@ -62,12 +64,17 @@ type Scoring struct {
 	TargetCompany    int      `yaml:"target_company"`
 }
 
-// Company is a target company; ATS and Slug, when set, enable fetching its
-// career board directly.
+// Company is a favorite company: its jobs get the target_company bonus from
+// any source, and its own open roles are fetched when ATS+Slug or Careers is
+// set. ATS+Slug reads a known job board directly; Careers starts from the
+// careers page, detects the board, and falls back to reading the page.
 type Company struct {
 	Name string `yaml:"name"`
-	ATS  string `yaml:"ats"`  // greenhouse | lever | ashby | teamtailor
-	Slug string `yaml:"slug"` // board name; for teamtailor, the *.teamtailor.com subdomain
+	ATS  string `yaml:"ats"`  // greenhouse | ashby | lever | teamtailor | workable | recruitee | personio
+	Slug string `yaml:"slug"` // board name; for teamtailor, recruitee and personio, the subdomain
+
+	Careers     string `yaml:"careers"`      // careers page URL
+	LinkPattern string `yaml:"link_pattern"` // regexp for job links on that page (optional)
 }
 
 // Sources toggles the aggregator feeds.
@@ -158,7 +165,10 @@ func Default() *Config {
 	return cfg
 }
 
-var knownATS = map[string]bool{"greenhouse": true, "lever": true, "ashby": true, "teamtailor": true}
+var knownATS = map[string]bool{
+	"greenhouse": true, "ashby": true, "lever": true, "teamtailor": true,
+	"workable": true, "recruitee": true, "personio": true,
+}
 
 func (c *Config) validate() error {
 	if c.Workers < 1 {
@@ -178,7 +188,21 @@ func (c *Config) validate() error {
 			return fmt.Errorf("company %q: ats and slug must be set together", co.Name)
 		}
 		if co.ATS != "" && !knownATS[co.ATS] {
-			return fmt.Errorf("company %q: unknown ats %q (want greenhouse, lever, ashby or teamtailor)", co.Name, co.ATS)
+			return fmt.Errorf("company %q: unknown ats %q (want greenhouse, ashby, lever, teamtailor, workable, recruitee or personio)", co.Name, co.ATS)
+		}
+		if co.Careers != "" {
+			u, err := url.Parse(co.Careers)
+			if err != nil || (u.Scheme != "http" && u.Scheme != "https") || u.Host == "" {
+				return fmt.Errorf("company %q: careers must be an http(s) URL, got %q", co.Name, co.Careers)
+			}
+		}
+		if co.LinkPattern != "" {
+			if co.Careers == "" {
+				return fmt.Errorf("company %q: link_pattern needs careers", co.Name)
+			}
+			if _, err := regexp.Compile(co.LinkPattern); err != nil {
+				return fmt.Errorf("company %q: link_pattern: %w", co.Name, err)
+			}
 		}
 	}
 	return nil

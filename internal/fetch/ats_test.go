@@ -58,7 +58,7 @@ func TestParseLever(t *testing.T) {
 	if j.Company != "examplego" || j.URL != "https://jobs.lever.co/examplego/l1" {
 		t.Errorf("unexpected fields: %+v", j)
 	}
-	if want := "Remote; Lisbon; Remote - EU; PT"; j.Location != want {
+	if want := "Remote; Lisbon; Remote - EU; Portugal"; j.Location != want { // country code expanded
 		t.Errorf("Location = %q, want %q", j.Location, want)
 	}
 	for _, s := range []string{"Go microservices", "What you'll do", "Run Kubernetes", "gRPC"} {

@@ -1,0 +1,11 @@
+{"name": "Example Atomic", "description": "<p>We build clocks.</p>",
+ "jobs": [
+  {"title": "Senior Rust Engineer", "shortcode": "AB12CD34EF", "code": "", "employment_type": "Full-time", "telecommuting": true,
+   "department": "Engineering", "url": "https://apply.workable.com/j/AB12CD34EF", "shortlink": "https://apply.workable.com/j/AB12CD34EF",
+   "application_url": "https://apply.workable.com/j/AB12CD34EF/apply", "published_on": "2026-10-06", "created_at": "2026-10-06",
+   "country": "Spain", "city": "Madrid", "state": "Madrid",
+   "locations": [{"country": "Portugal", "countryCode": "PT", "city": "Lisbon", "region": "Lisbon", "hidden": false}],
+   "description": "<p>Embedded <strong>Rust</strong> on Linux.</p>"},
+  {"title": "Lab Technician", "shortcode": "ZZ99", "telecommuting": false, "url": "https://apply.workable.com/j/ZZ99",
+   "published_on": "2026-10-01", "country": "United States", "city": "Pleasanton", "locations": [], "description": "<p>Lab work.</p>"}
+ ]}

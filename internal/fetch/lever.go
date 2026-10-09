@@ -76,7 +76,7 @@ func leverJobs(postings []leverPosting, board, company string) []job.Job {
 	jobs := make([]job.Job, 0, len(postings))
 	for _, p := range postings {
 		locs := append([]string{workplaceLabel(p.Workplace), p.Categories.Location}, p.Categories.AllLocations...)
-		locs = append(locs, p.Country)
+		locs = append(locs, countryName(p.Country))
 
 		desc := []string{p.DescriptionPlain}
 		for _, l := range p.Lists {

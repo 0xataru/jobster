@@ -11,6 +11,7 @@ import (
 	"log/slog"
 	"os"
 	"os/signal"
+	"regexp"
 	"slices"
 	"strings"
 	"time"
@@ -28,6 +29,7 @@ func main() {
 	configPath := flag.String("config", "jobster.yaml", "path to the YAML config")
 	dryRun := flag.Bool("dry-run", false, "print matches without touching the database")
 	verbose := flag.Bool("v", false, "log every dropped job and its reason")
+	discoverOnly := flag.Bool("discover", false, "show how each company's careers page will be read, then exit")
 	notifyMode := flag.String("notify", "auto", "where to send the digest: auto (telegram if configured, else stdout), telegram, stdout")
 	flag.Parse()
 
@@ -40,6 +42,17 @@ func main() {
 	ctx, stop := signal.NotifyContext(context.Background(), os.Interrupt)
 	defer stop()
 
+	if *discoverOnly {
+		cfg, err := config.Load(*configPath)
+		if err == nil {
+			err = discover(ctx, cfg)
+		}
+		if err != nil {
+			slog.Error("discover failed", "err", err)
+			os.Exit(1)
+		}
+		return
+	}
 	if err := run(ctx, *configPath, *dryRun, *notifyMode); err != nil {
 		slog.Error("run failed", "err", err)
 		os.Exit(1)
@@ -172,18 +185,63 @@ func buildFetchers(cfg *config.Config) []fetch.Fetcher {
 		}
 	}
 	for _, c := range cfg.Companies {
-		switch c.ATS {
-		case "greenhouse":
-			fs = append(fs, &fetch.Greenhouse{Client: client, Board: c.Slug})
-		case "lever":
-			fs = append(fs, &fetch.Lever{Client: client, Board: c.Slug, Company: c.Name})
-		case "ashby":
-			fs = append(fs, &fetch.Ashby{Client: client, Board: c.Slug, Company: c.Name})
-		case "teamtailor":
-			fs = append(fs, &fetch.Teamtailor{Client: client, Board: c.Slug, Company: c.Name})
+		switch {
+		case c.ATS != "":
+			f, err := fetch.NewATSFetcher(client, fetch.ATS{Kind: c.ATS, Slug: c.Slug}, c.Name)
+			if err != nil { // config validation already rejects unknown kinds
+				slog.Warn("skipping company", "company", c.Name, "err", err)
+				continue
+			}
+			fs = append(fs, f)
+		case c.Careers != "":
+			fs = append(fs, careersFetcher(client, c))
 		}
 	}
 	return fs
+}
+
+func careersFetcher(client *fetch.Client, c config.Company) *fetch.Careers {
+	f := &fetch.Careers{Client: client, Company: c.Name, URL: c.Careers}
+	if c.LinkPattern != "" {
+		f.LinkPattern = regexp.MustCompile(c.LinkPattern) // validated at load
+	}
+	return f
+}
+
+// discover reports, for each company with a careers page, how jobster will
+// read it, so a detected board can be pinned with ats and slug.
+func discover(ctx context.Context, cfg *config.Config) error {
+	client := fetch.NewClient()
+	for _, c := range cfg.Companies {
+		switch {
+		case c.ATS != "":
+			fmt.Printf("%-24s %s:%s (pinned)\n", c.Name, c.ATS, c.Slug)
+		case c.Careers == "":
+			fmt.Printf("%-24s bonus only (no ats or careers)\n", c.Name)
+		default:
+			ctx, cancel := context.WithTimeout(ctx, cfg.HTTPTimeout.D())
+			d, err := careersFetcher(client, c).Discover(ctx)
+			cancel()
+			if err == nil && d.Followed != "" {
+				fmt.Printf("%-24s followed openings link to %s\n", c.Name, d.Followed)
+			}
+			switch {
+			case err != nil:
+				fmt.Printf("%-24s error: %v\n", c.Name, err)
+			case d.HasATS && d.ATS.Pinnable():
+				fmt.Printf("%-24s %s board detected; to skip detection: { ats: %s, slug: %s }\n", c.Name, d.ATS, d.ATS.Kind, d.ATS.Slug)
+			case d.HasATS:
+				fmt.Printf("%-24s %s board detected; keep the careers URL to reach it\n", c.Name, d.ATS)
+			case d.Postings > 0:
+				fmt.Printf("%-24s page with %d embedded JobPosting entries\n", c.Name, d.Postings)
+			case d.Links > 0:
+				fmt.Printf("%-24s page with %d job links\n", c.Name, d.Links)
+			default:
+				fmt.Printf("%-24s no board or job links found (JavaScript page? try link_pattern)\n", c.Name)
+			}
+		}
+	}
+	return nil
 }
 
 // evaluate filters and scores jobs, collapses duplicates (keeping the best

@@ -22,6 +22,10 @@ filter:
     lever: 60d
     ashby: 60d
     teamtailor: 60d
+    workable: 60d
+    recruitee: 60d
+    personio: 60d
+    careers: 60d     # careers pages; jobs without a date are always kept
     hn: 35d          # the monthly thread stays relevant all month
   titles:
     include: [engineer, developer, sre, programmer, architect]
@@ -121,8 +125,16 @@ scoring:
   salary_below: -3
   target_company: 3
 
-# Target companies get the target_company bonus wherever their jobs come from.
-# With ats + slug set, their career board is also fetched directly.
+# Favorite companies. Their jobs get the target_company bonus wherever they
+# appear, and their own open roles are fetched and run through the same
+# filters. Three ways to list one:
+#   { name: X, ats: ashby, slug: x }        known job board, read via its API
+#   { name: X, careers: "https://x.com/careers" }
+#       jobster finds the board linked from the page (Greenhouse, Ashby, Lever,
+#       Teamtailor, Workable, Recruitee, Personio), or else reads the page and
+#       its job pages directly. Add link_pattern (a regexp on the URL path)
+#       if it picks the wrong links. `jobster -discover` shows what it found.
+#   { name: X }                              bonus only, nothing fetched
 companies:
   - { name: Cloudflare,     ats: greenhouse, slug: cloudflare }
   - { name: GitLab,         ats: greenhouse, slug: gitlab }
@@ -144,11 +156,14 @@ companies:
   - { name: Resend,         ats: ashby,      slug: resend }
   - { name: Zed,            ats: ashby,      slug: zed }
   - { name: Keyrock,        ats: ashby,      slug: Keyrock }
-  # Lever:      - { name: Example, ats: lever, slug: example }  (jobs.lever.co/<slug>)
-  # Teamtailor: - { name: Example, ats: teamtailor, slug: example }  (<slug>.teamtailor.com;
-  #             companies on a custom domain, like Xata, don't expose the feed)
-  # Target-only (bonus, not fetched):
-  - { name: Xata }
+  - { name: Xata,           careers: "https://xata.io/careers" }
+  - { name: MongoDB,        ats: greenhouse, slug: mongodb }
+  # ScyllaDB's careers page links to an openings page, which jobster follows;
+  # link_pattern keeps department pages (/co/engineering/all) out.
+  - name: ScyllaDB
+    careers: "https://www.scylladb.com/company/careers/"
+    link_pattern: '/job-openings/co/[^/]+/[0-9A-F]{2}\.[^/]+/'
+
 
 sources:
   remoteok: { enabled: true }
