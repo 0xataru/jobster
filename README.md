@@ -14,22 +14,22 @@ fetch (concurrent) → filter → score → dedupe (SQLite) → Telegram digest
 
 ## Sources
 
-| Source | How | Config |
-|---|---|---|
-| [RemoteOK](https://remoteok.com) | JSON API | `sources.remoteok` |
-| HN "Ask HN: Who is hiring?" | Algolia HN API, latest monthly thread | `sources.hackernews` |
-| [Remotive](https://remotive.com) | JSON API (the free tier returns only a small sample) | `sources.remotive` |
-| [We Work Remotely](https://weworkremotely.com) | category RSS feeds | `sources.weworkremotely` |
-| [Himalayas](https://himalayas.app) | search API, newest first | `sources.himalayas` |
-| [Djinni](https://djinni.co) | RSS per primary keyword | `sources.djinni` |
-| Greenhouse boards | `boards-api.greenhouse.io/v1/boards/{slug}/jobs` | `companies[].ats: greenhouse` |
-| Ashby boards | `api.ashbyhq.com/posting-api/job-board/{slug}` | `companies[].ats: ashby` |
-| Lever boards | `api.lever.co/v0/postings/{slug}` | `companies[].ats: lever` |
-| Teamtailor sites | `{slug}.teamtailor.com/jobs.rss` | `companies[].ats: teamtailor` |
-| Workable boards | `apply.workable.com/api/v1/widget/accounts/{slug}` | `companies[].ats: workable` |
-| Recruitee sites | `{slug}.recruitee.com/api/offers/` | `companies[].ats: recruitee` |
-| Personio feeds | `{slug}.jobs.personio.de/xml` | `companies[].ats: personio` |
-| Any careers page | detected board, or the page itself | `companies[].careers` |
+| Source                                         | How                                                  | Config                        |
+| ---------------------------------------------- | ---------------------------------------------------- | ----------------------------- |
+| [RemoteOK](https://remoteok.com)               | JSON API                                             | `sources.remoteok`            |
+| HN "Ask HN: Who is hiring?"                    | Algolia HN API, latest monthly thread                | `sources.hackernews`          |
+| [Remotive](https://remotive.com)               | JSON API (the free tier returns only a small sample) | `sources.remotive`            |
+| [We Work Remotely](https://weworkremotely.com) | category RSS feeds                                   | `sources.weworkremotely`      |
+| [Himalayas](https://himalayas.app)             | search API, newest first                             | `sources.himalayas`           |
+| [Djinni](https://djinni.co)                    | RSS per primary keyword                              | `sources.djinni`              |
+| Greenhouse boards                              | `boards-api.greenhouse.io/v1/boards/{slug}/jobs`     | `companies[].ats: greenhouse` |
+| Ashby boards                                   | `api.ashbyhq.com/posting-api/job-board/{slug}`       | `companies[].ats: ashby`      |
+| Lever boards                                   | `api.lever.co/v0/postings/{slug}`                    | `companies[].ats: lever`      |
+| Teamtailor sites                               | `{slug}.teamtailor.com/jobs.rss`                     | `companies[].ats: teamtailor` |
+| Workable boards                                | `apply.workable.com/api/v1/widget/accounts/{slug}`   | `companies[].ats: workable`   |
+| Recruitee sites                                | `{slug}.recruitee.com/api/offers/`                   | `companies[].ats: recruitee`  |
+| Personio feeds                                 | `{slug}.jobs.personio.de/xml`                        | `companies[].ats: personio`   |
+| Any careers page                               | detected board, or the page itself                   | `companies[].careers`         |
 
 Aggregators are read through public JSON/RSS endpoints only. HTML is read only
 for the careers pages of companies you list yourself (see
@@ -59,13 +59,44 @@ produces a static binary with no CGO. To install the binary directly:
 go install github.com/0xataru/jobster/cmd/jobster@latest
 ```
 
-| Flag | Default | |
-|---|---|---|
-| `-config` | `jobster.yaml` | config file |
-| `-dry-run` | off | print all current matches; never touches the database or Telegram |
-| `-notify` | `auto` | `auto`: Telegram if both env vars are set, else stdout. `telegram`: fail if they're missing. `stdout`: print only |
-| `-v` | off | debug log of every dropped job and its reason |
-| `-discover` | off | show how each company's careers page will be read, then exit |
+| Flag        | Default        |                                                                                                                   |
+| ----------- | -------------- | ----------------------------------------------------------------------------------------------------------------- |
+| `-config`   | `jobster.yaml` | config file                                                                                                       |
+| `-dry-run`  | off            | print all current matches; never touches the database or Telegram                                                 |
+| `-notify`   | `auto`         | `auto`: Telegram if both env vars are set, else stdout. `telegram`: fail if they're missing. `stdout`: print only |
+| `-v`        | off            | debug log of every dropped job and its reason                                                                     |
+| `-discover` | off            | show how each company's careers page will be read, then exit                                                      |
+
+## Add a favorite company
+
+1. Find the company's careers page, e.g. `https://xata.io/careers`.
+2. Add it under `companies` in `jobster.yaml`:
+   ```yaml
+   companies:
+     - { name: Xata, careers: "https://xata.io/careers" }
+   ```
+3. Check that jobster can read it:
+   ```sh
+   go run ./cmd/jobster -discover
+   ```
+
+   - `… board detected; to skip detection: { ats: …, slug: … }`: it works.
+     You can replace `careers` with the suggested `ats` and `slug`.
+   - `page with N job links`: it works; jobs are read from the page.
+   - `no board or job links found`: the page builds its job list with
+     JavaScript. Open it in a browser, find where "Apply" links lead (e.g.
+     `jobs.ashbyhq.com/acme`) and use `{ name: Acme, ats: ashby, slug: acme }`.
+4. Preview what matches your filters:
+   ```sh
+   go run ./cmd/jobster -dry-run
+   ```
+5. Commit and push `jobster.yaml`. The next scheduled run includes the
+   company's open roles.
+
+To stop following a company, delete its line. To only boost its jobs from
+other sources without fetching its board, list just the name:
+`{ name: Elastic }`. All options are under
+[Favorite companies](#favorite-companies).
 
 ## Telegram setup
 
@@ -140,24 +171,24 @@ All title, keyword, region and scoring terms use the same syntax:
 
 A job is dropped if it fails any of these:
 
-| Key | Rule |
-|---|---|
-| `max_age`, `max_age_by_source` | Posting age limit (`7d`, `36h`, …). `max_age_by_source` overrides it per source kind (`greenhouse`, `ashby`, `lever`, `teamtailor`, `hn`, `remoteok`). ATS boards date jobs by first publication, so they need a longer window. |
-| `titles.include` / `titles.exclude` | The title must match one include term and no exclude term. |
-| `keywords.required` | Title, description or tags must match at least one. |
-| `keywords.exclude` | Title, location or description must match none, e.g. "US only". |
-| `regions.allow` / `regions.deny` | Location must match an allow term and no deny term. Ashby, Lever and Teamtailor add "Remote" / "Hybrid" / "On-site" to the location, so `deny: [hybrid, on-site]` works for them. |
-| `regions.allow_unspecified` | Keep jobs with no location. This is common on RemoteOK and always the case on Djinni, whose feed has no location: filter Djinni with `sources.djinni.params` instead. |
+| Key                                 | Rule                                                                                                                                                                                                                            |
+| ----------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `max_age`, `max_age_by_source`      | Posting age limit (`7d`, `36h`, …). `max_age_by_source` overrides it per source kind (`greenhouse`, `ashby`, `lever`, `teamtailor`, `hn`, `remoteok`). ATS boards date jobs by first publication, so they need a longer window. |
+| `titles.include` / `titles.exclude` | The title must match one include term and no exclude term.                                                                                                                                                                      |
+| `keywords.required`                 | Title, description or tags must match at least one.                                                                                                                                                                             |
+| `keywords.exclude`                  | Title, location or description must match none, e.g. "US only".                                                                                                                                                                 |
+| `regions.allow` / `regions.deny`    | Location must match an allow term and no deny term. Ashby, Lever and Teamtailor add "Remote" / "Hybrid" / "On-site" to the location, so `deny: [hybrid, on-site]` works for them.                                               |
+| `regions.allow_unspecified`         | Keep jobs with no location. This is common on RemoteOK and always the case on Djinni, whose feed has no location: filter Djinni with `sources.djinni.params` instead.                                                           |
 
 ### Scoring (`scoring`)
 
-| Key | Points |
-|---|---|
-| `title` | Term → points when found in the title. Negative values are penalties. |
-| `text` | Term → points when found in the description or tags. |
+| Key                             | Points                                                                                                                                                                                                       |
+| ------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| `title`                         | Term → points when found in the title. Negative values are penalties.                                                                                                                                        |
+| `text`                          | Term → points when found in the description or tags.                                                                                                                                                         |
 | `salary_above` / `salary_below` | Points when a known salary is ≥ / < `min_salary`. Unknown salaries are neutral. Amounts are not converted, so only currencies in `salary_currencies` (default USD, EUR, GBP, CHF) count; others are neutral. |
-| `target_company` | Points for any company in `companies`, from any source. |
-| `threshold` | Minimum score to be notified. |
+| `target_company`                | Points for any company in `companies`, from any source.                                                                                                                                                      |
+| `threshold`                     | Minimum score to be notified.                                                                                                                                                                                |
 
 Each term counts once. The digest shows the score; run `-dry-run` to see each
 job's breakdown (e.g. `+5 title:rust, +1 kubernetes, -2 php`).
@@ -170,9 +201,9 @@ fetched and filtered like everything else. Three ways to list a company:
 
 ```yaml
 companies:
-  - { name: Supabase, ats: ashby, slug: supabase }    # known board, read via its API
+  - { name: Supabase, ats: ashby, slug: supabase } # known board, read via its API
   - { name: Xata, careers: "https://xata.io/careers" } # anything else: start from the careers page
-  - { name: Elastic }                                  # bonus only, nothing fetched
+  - { name: Elastic } # bonus only, nothing fetched
 ```
 
 **With `ats` + `slug`**, the board's public API is read directly. The slug is
